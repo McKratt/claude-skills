@@ -7,3 +7,6 @@
 # Claude Code
 .claude/
 memory/
+
+# Skill eval workspaces (generated outputs, not source)
+*-workspace/

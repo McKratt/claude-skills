@@ -1,0 +1,113 @@
+{
+  "skill_name": "java-testing",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Write a unit test for OrderService.cancelOrder(String id). The method should throw an OrderNotFoundException when the order doesn't exist, and set the status to CANCELLED and save it when it does. The service depends on an OrderRepository.",
+      "expected_output": "A JUnit test class using @ExtendWith(MockitoExtension.class), BDDMockito for stubbing and verification, AssertJ for assertions, snake_case method names, and AAA structure with comments.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "uses-bdd-mockito-given",
+          "description": "Output uses given(...) from BDDMockito, not Mockito.when(...)"
+        },
+        {
+          "name": "no-mockito-when",
+          "description": "Output does not contain Mockito.when( or when( from non-BDD Mockito"
+        },
+        {
+          "name": "uses-assertj",
+          "description": "Output uses assertThat(...) from AssertJ"
+        },
+        {
+          "name": "no-junit-assertions",
+          "description": "Output does not use assertTrue, assertFalse, assertEquals from JUnit"
+        },
+        {
+          "name": "snake-case-method-names",
+          "description": "Test method names use snake_case (e.g., should_throw_when_order_not_found)"
+        },
+        {
+          "name": "mockito-extension",
+          "description": "Test class is annotated with @ExtendWith(MockitoExtension.class)"
+        },
+        {
+          "name": "aaa-structure",
+          "description": "Test methods contain // Arrange, // Act, // Assert comments (or at minimum // Act)"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Write a @WebMvcTest test for GET /products/{id} in ProductController. The endpoint should return 200 with the product as JSON when found, and 404 when the product doesn't exist. ProductController depends on ProductService.",
+      "expected_output": "A slice test using @WebMvcTest(ProductController.class), RestTestClient for HTTP assertions, @MockBean for ProductService, BDDMockito for stubbing, and snake_case method names.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "uses-web-mvc-test",
+          "description": "Test class is annotated with @WebMvcTest"
+        },
+        {
+          "name": "uses-rest-test-client",
+          "description": "Test uses RestTestClient, not MockMvc directly"
+        },
+        {
+          "name": "uses-mock-bean",
+          "description": "ProductService is injected with @MockBean"
+        },
+        {
+          "name": "no-spring-boot-test",
+          "description": "Test does not use @SpringBootTest (wrong slice for this scenario)"
+        },
+        {
+          "name": "uses-bdd-mockito-given",
+          "description": "Stubbing uses given(...) from BDDMockito"
+        },
+        {
+          "name": "snake-case-method-names",
+          "description": "Test method names use snake_case"
+        },
+        {
+          "name": "tests-both-cases",
+          "description": "Test covers both the found (200) and not-found (404) scenarios"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write a test for a NotificationClient that sends a POST to an external /notifications endpoint. The client should return true when the response is 200 OK, and false when the server returns 503. Use a standalone WireMock setup (no Spring context needed).",
+      "expected_output": "A test using @RegisterExtension with WireMockExtension (standalone, no Spring), stubFor() to simulate 200 and 503 responses, BDDMockito-style if mocks needed, AssertJ assertions, and snake_case method names.",
+      "files": [],
+      "assertions": [
+        {
+          "name": "uses-wiremock-extension",
+          "description": "Test uses @RegisterExtension with WireMockExtension (standalone WireMock)"
+        },
+        {
+          "name": "uses-stub-for",
+          "description": "Test uses stubFor( to define HTTP stubs"
+        },
+        {
+          "name": "no-spring-annotations",
+          "description": "Test does not use @SpringBootTest, @WebMvcTest, or @AutoConfigureWireMock"
+        },
+        {
+          "name": "tests-success-case",
+          "description": "Test covers the 200 OK success scenario"
+        },
+        {
+          "name": "tests-failure-case",
+          "description": "Test covers the 503 failure scenario"
+        },
+        {
+          "name": "uses-assertj",
+          "description": "Assertions use assertThat( from AssertJ"
+        },
+        {
+          "name": "snake-case-method-names",
+          "description": "Test method names use snake_case"
+        }
+      ]
+    }
+  ]
+}

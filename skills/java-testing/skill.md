@@ -23,7 +23,6 @@ description: Use when writing, reviewing, or fixing Java tests — unit tests, s
 Every test method follows AAA with explicit comments when the sections are non-trivial:
 
 ```java
-
 @Test
 void should_return_order_when_id_exists() {
     // Arrange
@@ -46,7 +45,6 @@ void should_return_order_when_id_exists() {
 ### Class Setup
 
 ```java
-
 @ExtendWith(MockitoExtension.class)
 class OrderServiceTest {
 
@@ -71,42 +69,21 @@ import static org.mockito.BDDMockito.willThrow;
 **Stubbing:**
 
 ```java
-given(repository.findById("123")).
+given(repository.findById("123")).willReturn(Optional.of(entity));
 
-willReturn(Optional.of(entity));
+given(repository.save(any(Order.class))).willAnswer(i -> i.getArgument(0));
 
-given(repository.save(any(Order.class))).
-
-willAnswer(i ->i.
-
-getArgument(0));
-
-willThrow(new DataAccessException("db down") {
-}).
-
-given(repository).
-
-findById("x");
+willThrow(new DataAccessException("db down") {}).given(repository).findById("x");
 ```
 
 **Verification:**
 
 ```java
-then(repository).
+then(repository).should().save(any(Order.class));
 
-should().
+then(repository).should(never()).delete(any());
 
-save(any(Order.class));
-
-then(repository).
-
-should(never()).
-
-delete(any());
-
-then(repository).
-
-shouldHaveNoMoreInteractions();
+then(repository).shouldHaveNoMoreInteractions();
 ```
 
 ### AssertJ Assertions
@@ -115,44 +92,25 @@ Prefer specific assertions over `isEqualTo(true)`:
 
 ```java
 // Collections
-assertThat(results).
-
-hasSize(2).
-
-extracting(Order::getId).
-
-containsExactly("1","2");
+assertThat(results)
+    .hasSize(2)
+    .extracting(Order::getId)
+    .containsExactly("1", "2");
 
 // Exceptions
-assertThatThrownBy(() ->service.
-
-findById(null))
-        .
-
-isInstanceOf(IllegalArgumentException .class)
-    .
-
-hasMessageContaining("id must not be null");
+assertThatThrownBy(() -> service.findById(null))
+    .isInstanceOf(IllegalArgumentException.class)
+    .hasMessageContaining("id must not be null");
 
 // Optional
-assertThat(result).
-
-isPresent().
-
-contains(expectedOrder);
+assertThat(result)
+    .isPresent()
+    .contains(expectedOrder);
 
 // Soft assertions (multiple failures in one test)
-assertSoftly(softly ->{
-        softly.
-
-assertThat(order.getId()).
-
-isEqualTo("123");
-    softly.
-
-assertThat(order.getStatus()).
-
-isEqualTo(Status.PENDING);
+assertSoftly(softly -> {
+    softly.assertThat(order.getId()).isEqualTo("123");
+    softly.assertThat(order.getStatus()).isEqualTo(Status.PENDING);
 });
 ```
 
@@ -168,7 +126,6 @@ Spring Boot 4 introduces `RestTestClient` as the preferred alternative to `MockM
 against both mock and real servers.
 
 ```java
-
 @WebMvcTest(OrderController.class)
 @AutoConfigureMockMvc
 class OrderControllerTest {
@@ -199,7 +156,6 @@ class OrderControllerTest {
 ### Repository Layer — `@DataJpaTest`
 
 ```java
-
 @DataJpaTest
 class OrderRepositoryTest {
 
@@ -228,7 +184,6 @@ class OrderRepositoryTest {
 Use for integration tests that need a real database, broker, or other infrastructure.
 
 ```java
-
 @SpringBootTest
 @Testcontainers
 class OrderIntegrationTest {
@@ -248,7 +203,6 @@ Share a single container across a test class with `static @Container` to avoid r
 Use when testing code that makes outbound HTTP calls.
 
 ```java
-
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 @AutoConfigureWireMock(port = 0)
 class PaymentClientTest {
@@ -277,7 +231,6 @@ class PaymentClientTest {
 For standalone WireMock (without Spring):
 
 ```java
-
 @ExtendWith(WireMockExtension.class)
 class PaymentClientTest {
 
