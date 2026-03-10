@@ -1,0 +1,58 @@
+{
+  "skill_name": "spring-boot",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Build a Spring Boot product catalog service. Create a Product domain object with name (String), price (BigDecimal), and stockQuantity (int) fields. The domain object should enforce that price must be positive and stockQuantity cannot be negative — put that logic in the domain, not in a service. Add a ProductService that can create a product and find one by id. Add a REST controller with POST /api/products and GET /api/products/{id}. Wire everything with @Configuration classes. Use Spring JDBC with JdbcClient for persistence. Annotate domain classes appropriately for nullability.",
+      "expected_output": "Java files: Product.java (rich domain object with validation), ProductRepository.java (port interface), JdbcProductRepository.java (adapter), ProductService.java (thin orchestrator), ProductController.java (@RestController), and a @Configuration class wiring them together.",
+      "files": [],
+      "assertions": [
+        {"id": "no-spring-import-in-product", "text": "Product.java contains no org.springframework import"},
+        {"id": "nullmarked-on-product", "text": "Product.java is annotated with @NullMarked"},
+        {"id": "domain-validates-price", "text": "Price validation (price > 0 or similar) lives in Product.java, not ProductService.java"},
+        {"id": "domain-validates-stock", "text": "Stock quantity validation (>= 0) lives in Product.java, not ProductService.java"},
+        {"id": "no-service-annotation", "text": "ProductService.java has no @Service annotation"},
+        {"id": "configuration-class-with-beans", "text": "A @Configuration class registers ProductService and/or ProductRepository via @Bean methods"},
+        {"id": "readonly-transactional-on-find", "text": "The findById method in ProductService uses @Transactional(readOnly = true)"},
+        {"id": "jdbcclient-used", "text": "JdbcClient is used in the repository implementation"},
+        {"id": "findbyid-returns-optional", "text": "findById returns Optional<Product>"},
+        {"id": "constructor-injection", "text": "All classes use constructor injection — no @Autowired on fields"}
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Refactor the following legacy Spring Boot code to follow modern best practices. Fix all issues you can find.\n\n[CustomerService with @Service + @Autowired fields, JdbcCustomerRepository with @Repository + @Autowired JdbcTemplate, Customer with Spring @NonNull imports, EmailNotificationService with @Service + @Async]",
+      "expected_output": "Refactored Java files: CustomerService (no @Service, constructor injection, @Transactional(readOnly=true) on findById), JdbcCustomerRepository (no @Repository, constructor injection), Customer (JSpecify @NullMarked, no Spring imports), EmailNotificationService equivalent (no @Service, no @Async, virtual thread executor), @Configuration class wiring all beans via @Bean.",
+      "files": [],
+      "assertions": [
+        {"id": "no-service-on-customer-service", "text": "CustomerService has no @Service annotation"},
+        {"id": "no-service-on-email-service", "text": "EmailNotificationService (or equivalent) has no @Service annotation"},
+        {"id": "no-repository-on-jdbc-repo", "text": "JdbcCustomerRepository has no @Repository annotation"},
+        {"id": "configuration-class-with-bean", "text": "A @Configuration class registers at least CustomerService via @Bean"},
+        {"id": "no-autowired-fields", "text": "No @Autowired on fields — all injection is via constructor"},
+        {"id": "no-spring-import-in-customer", "text": "Customer.java has no org.springframework import"},
+        {"id": "nullmarked-on-customer", "text": "Customer.java uses @NullMarked instead of Spring @NonNull"},
+        {"id": "no-async-annotation", "text": "No @Async annotation in any file"},
+        {"id": "virtual-thread-or-executor", "text": "Async behavior uses virtual thread executor or CompletableFuture.runAsync"},
+        {"id": "readonly-transactional-on-find", "text": "findById in CustomerService has @Transactional(readOnly = true)"}
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Write tests for a Spring Boot order management API. The app has these endpoints: POST /api/orders (accepts JSON {\"itemId\": \"string\", \"quantity\": int}, returns 201 with Location header and order body), GET /api/orders/{id} (returns 200 with order or 404 with ProblemDetail). The app uses PostgreSQL. Write tests that treat the running application as a black box — no mocking of internal beans. Also include a unit test for an Order domain object that has a ship() method which should throw IllegalStateException if the order is already shipped.",
+      "expected_output": "Java test files: OrderApiTest.java using REST Assured + @SpringBootTest(RANDOM_PORT) + Testcontainers PostgreSQL, and OrderTest.java testing the domain object directly with plain JUnit/AssertJ — no Spring context.",
+      "files": [],
+      "assertions": [
+        {"id": "springboottest-random-port", "text": "OrderApiTest uses @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)"},
+        {"id": "testcontainers-postgres", "text": "OrderApiTest uses @Testcontainers and PostgreSQLContainer"},
+        {"id": "rest-assured-imported", "text": "REST Assured is imported (io.restassured) in the API test class"},
+        {"id": "no-mockbean-in-api-test", "text": "No @MockBean appears in the API test class — the full stack runs"},
+        {"id": "rest-assured-given-when-then", "text": "Tests use REST Assured's given/when/then DSL"},
+        {"id": "domain-test-no-spring", "text": "The Order domain unit test has no Spring annotations"},
+        {"id": "ship-exception-tested", "text": "A test verifies that ship() throws IllegalStateException when called on an already-shipped order"},
+        {"id": "snake-case-test-names", "text": "All test method names use snake_case"},
+        {"id": "service-connection-annotation", "text": "PostgreSQLContainer uses @ServiceConnection for automatic datasource configuration"}
+      ]
+    }
+  ]
+}
