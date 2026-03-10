@@ -7,38 +7,38 @@ frameworks to use, code style decisions — without having to repeat them in eve
 
 ## Skills
 
-| Skill                                          | Triggers when...                         |
-|------------------------------------------------|------------------------------------------|
-| [`java-testing`](skills/java-testing/skill.md) | Writing, reviewing, or fixing Java tests |
+| Skill                                          | Triggers when...                              |
+|------------------------------------------------|-----------------------------------------------|
+| [`java-testing`](skills/java-testing/skill.md) | Writing, reviewing, or fixing Java tests      |
+| [`spring-boot`](skills/spring-boot/skill.md)   | Building or reviewing Spring Boot applications |
 
 ## Installation
 
 Skills must be placed in `~/.claude/skills/` for Claude Code to load them.
 
-### Recommended: symlink (stays in sync with the repo)
+### Recommended: install script (links all skills at once)
 
 ```bash
 git clone git@github.com:McKratt/claude-skills.git ~/git/claude-skills
-
-mkdir -p ~/.claude/skills
-
-# Link each skill — repeat for new skills added later
-ln -s ~/git/claude-skills/skills/java-testing ~/.claude/skills/java-testing
+cd ~/git/claude-skills
+./install.sh
 ```
 
-### Alternative: copy (one-time snapshot)
+The script auto-discovers every skill under `skills/*/skill.md` and creates a symlink for each in `~/.claude/skills/`. Output per skill: `[linked]`, `[skip]` (already correct), or `[warn]` (conflict).
 
-```bash
-cp -r ~/git/claude-skills/skills/java-testing ~/.claude/skills/java-testing
-```
-
-### Keeping skills up to date (symlink approach)
+### Keeping skills up to date
 
 ```bash
 cd ~/git/claude-skills && git pull
 ```
 
-No further action needed — the symlinks always point to the latest version.
+No re-run needed — the symlinks stay live and always point to the latest version. When new skills are added to the repo, run `./install.sh` once to link them.
+
+### Manual single-skill install (selective)
+
+```bash
+ln -s ~/git/claude-skills/skills/<skill-name> ~/.claude/skills/<skill-name>
+```
 
 ## Adding a new skill
 
@@ -52,7 +52,7 @@ description: Use when <specific trigger condition>
 ---
 ```
 
-3. Symlink the new directory into `~/.claude/skills/`
+3. Run `./install.sh` to link the new skill (or manually: `ln -s ~/git/claude-skills/skills/<skill-name> ~/.claude/skills/<skill-name>`)
 
 The `description` field controls when Claude invokes the skill automatically — write it as a concrete trigger condition,
 not a vague summary.
